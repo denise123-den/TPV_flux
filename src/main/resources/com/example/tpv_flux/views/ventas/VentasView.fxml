@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.tpv_flux.controller.ventas.VentasController">
+
+    <!-- =================================================================== -->
+    <!-- BARRA SUPERIOR (Buscador + Estado de Caja/Turno)                    -->
+    <!-- =================================================================== -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="top-header-bar">
+            <HBox HBox.hgrow="ALWAYS" styleClass="search-box-container">
+                <FontIcon iconLiteral="fth-search"/>
+                <TextField fx:id="txtSearch" HBox.hgrow="ALWAYS"
+                           promptText="Buscar producto o escanear código de barras..."
+                           styleClass="search-input-clean"/>
+            </HBox>
+
+            <VBox alignment="CENTER_RIGHT" spacing="1.0">
+                <Label text="Sucursal Centro · Caja 1" styleClass="branch-title"/>
+                <Label text="Turno abierto · 09:03 am" styleClass="branch-subtitle"/>
+            </VBox>
+        </HBox>
+    </top>
+
+    <!-- =================================================================== -->
+    <!-- CATÁLOGO DE PRODUCTOS (Centro)                                      -->
+    <!-- =================================================================== -->
+    <center>
+        <VBox spacing="16.0">
+            <padding>
+                <Insets top="20.0" right="24.0" bottom="20.0" left="24.0"/>
+            </padding>
+
+            <!-- Cabecera Productos + Pills de Categoría -->
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label text="Productos" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <HBox spacing="8.0" alignment="CENTER_RIGHT">
+                    <Button fx:id="pillTodos" text="Todos" onAction="#onFilterCategory"
+                            styleClass="category-pill, category-pill-active"/>
+                    <Button fx:id="pillCelulares" text="Celulares" onAction="#onFilterCategory"
+                            styleClass="category-pill"/>
+                    <Button fx:id="pillComputo" text="Cómputo" onAction="#onFilterCategory"
+                            styleClass="category-pill"/>
+                    <Button fx:id="pillAudio" text="Audio" onAction="#onFilterCategory"
+                            styleClass="category-pill"/>
+                </HBox>
+            </HBox>
+
+            <!-- Grid de tarjetas de productos (4 columnas) -->
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="clean-scroll">
+                <GridPane fx:id="productsGrid" hgap="14.0" vgap="14.0">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="25.0" hgrow="ALWAYS"/>
+                        <ColumnConstraints percentWidth="25.0" hgrow="ALWAYS"/>
+                        <ColumnConstraints percentWidth="25.0" hgrow="ALWAYS"/>
+                        <ColumnConstraints percentWidth="25.0" hgrow="ALWAYS"/>
+                    </columnConstraints>
+                </GridPane>
+            </ScrollPane>
+        </VBox>
+    </center>
+
+    <!-- =================================================================== -->
+    <!-- PANEL DE VENTA ACTUAL / TICKET (Derecha)                            -->
+    <!-- =================================================================== -->
+    <right>
+        <VBox styleClass="ticket-panel">
+            <!-- Encabezado del ticket -->
+            <VBox spacing="2.0" styleClass="ticket-header">
+                <Label text="Venta actual" styleClass="ticket-title"/>
+                <Label fx:id="lblTicketSubtitle" text="Ticket #0482 · 3 artículos" styleClass="ticket-subtitle"/>
+            </VBox>
+
+            <!-- Lista de artículos en el ticket -->
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="clean-scroll">
+                <VBox fx:id="ticketItemsContainer"/>
+            </ScrollPane>
+
+            <!-- Resumen y cobro -->
+            <VBox styleClass="ticket-footer">
+                <VBox spacing="6.0">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Subtotal" styleClass="summary-label"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblSubtotal" text="\$897.00" styleClass="summary-value"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="IVA (16%)" styleClass="summary-label"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblIva" text="\$143.52" styleClass="summary-value"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT">
+                        <padding>
+                            <Insets top="4.0"/>
+                        </padding>
+                        <Label text="Total" styleClass="summary-total-label"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblTotal" text="\$1,040.52" styleClass="summary-total-value"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Botones de método de pago -->
+                <HBox spacing="10.0">
+                    <Button fx:id="btnEfectivo" text="Efectivo" maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                            onAction="#onSelectEfectivo" styleClass="payment-method-btn"/>
+                    <Button fx:id="btnTarjeta" text="Tarjeta" maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                            onAction="#onSelectTarjeta" styleClass="payment-method-btn"/>
+                </HBox>
+
+                <!-- Botón principal de cobro -->
+                <Button fx:id="btnCobrar" text="Cobrar $1,040.52" maxWidth="Infinity"
+                        styleClass="primary-action-btn"/>
+            </VBox>
+        </VBox>
+    </right>
+
+</BorderPane>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.tpv_flux.controller.productos.ProductosController"
+      spacing="18.0">
+
+    <padding>
+        <Insets top="24.0" right="28.0" bottom="24.0" left="28.0"/>
+    </padding>
+
+    <!-- =================================================================== -->
+    <!-- CABECERA (Título + Contador + Botón "+ Nuevo producto")             -->
+    <!-- =================================================================== -->
+    <HBox alignment="CENTER_LEFT">
+        <VBox spacing="2.0">
+            <Label text="Productos" styleClass="page-title"/>
+            <Label fx:id="lblResumenProductos" text="184 productos · 6 con stock bajo" styleClass="page-subtitle"/>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="btnNuevoProducto" text="+ Nuevo producto" styleClass="primary-action-btn"/>
+    </HBox>
+
+    <!-- =================================================================== -->
+    <!-- BARRA DE FILTROS (Buscador + Categorías + Estado)                   -->
+    <!-- =================================================================== -->
+    <HBox spacing="12.0" alignment="CENTER_LEFT">
+        <HBox HBox.hgrow="ALWAYS" styleClass="search-box-container-white">
+            <FontIcon iconLiteral="fth-search"/>
+            <TextField fx:id="txtBuscarProducto" HBox.hgrow="ALWAYS"
+                       promptText="Buscar por nombre, SKU o código de barras..."
+                       styleClass="search-input-clean"/>
+        </HBox>
+
+        <ComboBox fx:id="cmbCategorias" prefWidth="195.0" styleClass="filter-combo"/>
+        <ComboBox fx:id="cmbEstados" prefWidth="155.0" styleClass="filter-combo"/>
+    </HBox>
+
+    <!-- =================================================================== -->
+    <!-- TABLA DE PRODUCTOS (Tarjeta blanca redondeada)                      -->
+    <!-- =================================================================== -->
+    <VBox VBox.vgrow="ALWAYS" styleClass="surface-card">
+        <!-- Encabezado de columnas -->
+        <GridPane styleClass="table-header-row">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="33.0"/>
+                <ColumnConstraints percentWidth="17.0"/>
+                <ColumnConstraints percentWidth="15.0"/>
+                <ColumnConstraints percentWidth="9.0" halignment="RIGHT"/>
+                <ColumnConstraints percentWidth="12.0" halignment="RIGHT"/>
+                <ColumnConstraints percentWidth="10.0"/>
+                <ColumnConstraints percentWidth="4.0" halignment="RIGHT"/>
+            </columnConstraints>
+
+            <Label text="Producto" styleClass="table-header-label" GridPane.columnIndex="0"/>
+            <Label text="SKU" styleClass="table-header-label" GridPane.columnIndex="1"/>
+            <Label text="Categoría" styleClass="table-header-label" GridPane.columnIndex="2"/>
+            <Label text="Stock" styleClass="table-header-label" GridPane.columnIndex="3"/>
+            <Label text="Precio" styleClass="table-header-label" GridPane.columnIndex="4">
+                <GridPane.margin>
+                    <Insets right="18.0"/>
+                </GridPane.margin>
+            </Label>
+            <Label text="Estado" styleClass="table-header-label" GridPane.columnIndex="5"/>
+            <Label text="" styleClass="table-header-label" GridPane.columnIndex="6"/>
+        </GridPane>
+
+        <!-- Filas de productos -->
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="clean-scroll">
+            <VBox fx:id="tableRowsContainer"/>
+        </ScrollPane>
+    </VBox>
+
+</VBox>
