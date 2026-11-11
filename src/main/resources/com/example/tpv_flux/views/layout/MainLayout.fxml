@@ -16,9 +16,7 @@
             prefWidth="1280.0" prefHeight="800.0"
             stylesheets="@../../css/app.css">
 
-    <!-- =================================================================== -->
     <!-- SIDEBAR IZQUIERDO                                                   -->
-    <!-- =================================================================== -->
     <left>
         <VBox styleClass="sidebar">
             <!-- Logo / Marca -->
@@ -56,7 +54,7 @@
                 </Button>
 
                 <Button fx:id="btnInventario" maxWidth="Infinity" graphicTextGap="12.0"
-                        text="Inventario" onAction="#onShowPlaceholder"
+                        text="Inventario" onAction="#onShowInventario"
                         styleClass="nav-button">
                     <graphic>
                         <FontIcon iconLiteral="fth-archive"/>
@@ -80,7 +78,7 @@
                 </Button>
 
                 <Button fx:id="btnReportes" maxWidth="Infinity" graphicTextGap="12.0"
-                        text="Reportes" onAction="#onShowPlaceholder"
+                        text="Reportes" onAction="#onShowReportes"
                         styleClass="nav-button">
                     <graphic>
                         <FontIcon iconLiteral="fth-bar-chart-2"/>
@@ -88,14 +86,14 @@
                 </Button>
 
                 <Button fx:id="btnNotificaciones" maxWidth="Infinity"
-                        onAction="#onShowPlaceholder"
+                        onAction="#onShowNotificaciones"
                         styleClass="nav-button">
                     <graphic>
                         <HBox alignment="CENTER_LEFT" spacing="12.0" prefWidth="188.0">
                             <FontIcon iconLiteral="fth-bell"/>
                             <Label text="Notificaciones" styleClass="nav-inline-label"/>
                             <Region HBox.hgrow="ALWAYS"/>
-                            <Label text="4" styleClass="notification-badge"/>
+                            <Label fx:id="lblNotificationBadge" text="4" styleClass="notification-badge"/>
                         </HBox>
                     </graphic>
                 </Button>
@@ -112,21 +110,20 @@
             <Region VBox.vgrow="ALWAYS"/>
 
             <!-- Footer de Usuario Activo -->
-            <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="sidebar-footer">
+            <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="sidebar-footer"
+                  onMouseClicked="#onCerrarSesion" style="-fx-cursor: hand;">
                 <StackPane styleClass="user-avatar">
-                    <Label text="AM" styleClass="user-avatar-text"/>
+                    <Label fx:id="lblUserAvatar" text="AM" styleClass="user-avatar-text"/>
                 </StackPane>
                 <VBox spacing="1.0">
-                    <Label text="Ana Martínez" styleClass="user-name"/>
-                    <Label text="Cajera · Turno AM" styleClass="user-role"/>
+                    <Label fx:id="lblUserName" text="Ana Martínez" styleClass="user-name"/>
+                    <Label fx:id="lblUserRole" text="Cajera · Turno AM" styleClass="user-role"/>
                 </VBox>
             </HBox>
         </VBox>
     </left>
 
-    <!-- =================================================================== -->
-    <!-- CONTENEDOR CENTRAL DINÁMICO                                         -->
-    <!-- =================================================================== -->
+    <!-- CONTENEDOR DINÁMICO                                         -->
     <center>
         <StackPane fx:id="contentArea" styleClass="content-area"/>
     </center>

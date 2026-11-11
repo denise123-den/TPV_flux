@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.tpv_flux.controller.notificaciones.NotificacionesController"
+           alignment="TOP_CENTER">
+
+    <padding>
+        <Insets top="24.0" right="28.0" bottom="24.0" left="28.0"/>
+    </padding>
+
+    <VBox spacing="16.0" maxWidth="760.0" prefWidth="760.0">
+        <!-- CABECERA (Título + Contador + Botón "Marcar todas como leídas") -->
+        <HBox alignment="CENTER_LEFT">
+            <VBox spacing="2.0">
+                <Label text="Notificaciones" styleClass="page-title"/>
+                <Label fx:id="lblSubtituloSinLeer" text="4 sin leer" styleClass="page-subtitle"/>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button fx:id="btnMarcarTodas" text="Marcar todas como leídas"
+                    onAction="#onMarkAllAsRead" styleClass="secondary-action-btn"/>
+        </HBox>
+
+        <!-- FILTROS (Todas / No leídas)                                     -->
+        <HBox spacing="8.0" alignment="CENTER_LEFT">
+            <Button fx:id="pillTodas" text="Todas · 7"
+                    onAction="#onFilterTodas" styleClass="category-pill, category-pill-active"/>
+            <Button fx:id="pillNoLeidas" text="No leídas · 4"
+                    onAction="#onFilterNoLeidas" styleClass="category-pill"/>
+        </HBox>
+
+        <!-- LISTA DE TARJETAS DE NOTIFICACIÓN                               -->
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="clean-scroll">
+            <VBox fx:id="notificationsListContainer" spacing="10.0"/>
+        </ScrollPane>
+    </VBox>
+
+</StackPane>

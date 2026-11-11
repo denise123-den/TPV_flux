@@ -1,14 +1,26 @@
 package com.example.tpv_flux.controller.ventas;
 
+import com.example.tpv_flux.config.DatabaseSeeder;
+import com.example.tpv_flux.config.HibernateUtil;
+import com.example.tpv_flux.config.SessionManager;
+import com.example.tpv_flux.controller.layout.MainLayoutController;
+import com.example.tpv_flux.dao.ProductoDao;
+import com.example.tpv_flux.dao.VentaDao;
+import com.example.tpv_flux.model.MetodoPago;
 import com.example.tpv_flux.model.ProductItem;
+import com.example.tpv_flux.model.Producto;
 import com.example.tpv_flux.model.TicketLineItem;
 import com.example.tpv_flux.util.CurrencyUtil;
+import com.example.tpv_flux.util.ImageUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -31,6 +43,10 @@ public class VentasController {
 
     @FXML
     private TextField txtSearch;
+    @FXML
+    private Label lblBranchTitle;
+    @FXML
+    private Label lblBranchSubtitle;
 
     @FXML
     private Button pillTodos;
@@ -62,40 +78,81 @@ public class VentasController {
     @FXML
     private Button btnCobrar;
 
+    private final ProductoDao productoDao = new ProductoDao();
+    private final VentaDao ventaDao = new VentaDao();
+
     private final List<ProductItem> catalogProducts = new ArrayList<>();
     private final List<TicketLineItem> ticketItems = new ArrayList<>();
     private List<Button> categoryPills;
     private String selectedCategory = "Todos";
+    private String selectedPaymentMethod = MetodoPago.EFECTIVO;
+    private String currentFolio = "#0482";
 
     @FXML
     public void initialize() {
         categoryPills = List.of(pillTodos, pillCelulares, pillComputo, pillAudio);
 
-        loadMockupCatalog();
+        if (lblBranchTitle != null) {
+            lblBranchTitle.setText(SessionManager.getTerminalSucursal());
+        }
+        if (lblBranchSubtitle != null) {
+            lblBranchSubtitle.setText("Turno abierto · " + SessionManager.getHoraAperturaTurno());
+        }
+
+        loadCatalogFromDatabaseOrFallback();
         loadMockupInitialTicket();
 
+        onSelectEfectivo();
+        btnCobrar.setOnAction(e -> onCobrarVenta());
         txtSearch.textProperty().addListener((obs, oldVal, newVal) -> renderProductGrid());
 
         renderProductGrid();
         renderTicket();
     }
 
+    private void loadCatalogFromDatabaseOrFallback() {
+        catalogProducts.clear();
+        try {
+            if (HibernateUtil.isConnected()) {
+                DatabaseSeeder.seedIfEmpty();
+                List<Producto> dbProducts = productoDao.findAllActive();
+                for (Producto p : dbProducts) {
+                    catalogProducts.add(p.toProductItem());
+                }
+                currentFolio = ventaDao.generarSiguienteFolio();
+            }
+        } catch (Exception e) {
+            System.err.println("[VentasController] Error consultando productos en BD: " + e.getMessage());
+        }
+
+        if (catalogProducts.isEmpty()) {
+            loadMockupCatalog();
+        }
+    }
+
     private void loadMockupCatalog() {
-        catalogProducts.add(new ProductItem("Funda iPhone 14", "FN-IP14-001", "Celulares", "FUNDA", 18, 249.00));
-        catalogProducts.add(new ProductItem("Cable USB-C 1m", "CB-USBC-100", "Cómputo", "CABLE", 42, 99.00));
-        catalogProducts.add(new ProductItem("Audífonos Bluetooth", "AU-BT-X2", "Audio", "AUDIO", 6, 450.00));
-        catalogProducts.add(new ProductItem("Cargador 20W", "CG-20W-002", "Cómputo", "CARGA", 25, 189.00));
-        catalogProducts.add(new ProductItem("Mica templada", "MC-IP14-01", "Celulares", "MICA", 3, 79.00));
-        catalogProducts.add(new ProductItem("Power bank 10000mAh", "PB-10K-003", "Cómputo", "POWER", 11, 399.00));
+        catalogProducts.add(new ProductItem("Funda iPhone 14", "FN-IP14-001", "Celulares", "FUNDA", 18, 249.00, "iphon.jpeg"));
+        catalogProducts.add(new ProductItem("Cable USB-C 1m", "CB-USBC-100", "Cómputo", "CABLE", 42, 99.00, "d1.jpeg"));
+        catalogProducts.add(new ProductItem("Audífonos Bluetooth", "AU-BT-X2", "Audio", "AUDIO", 6, 450.00, "biblio.jpeg"));
+        catalogProducts.add(new ProductItem("Cargador 20W", "CG-20W-002", "Cómputo", "CARGA", 25, 189.00, "upp.jpeg"));
+        catalogProducts.add(new ProductItem("Mica templada", "MC-IP14-01", "Celulares", "MICA", 3, 79.00, "logo.png"));
+        catalogProducts.add(new ProductItem("Power bank 10000mAh", "PB-10K-003", "Cómputo", "POWER", 11, 399.00, "logotarea.png"));
         catalogProducts.add(new ProductItem("Memoria USB 32GB", "MU-32GB-01", "Cómputo", "USB", 30, 129.00));
         catalogProducts.add(new ProductItem("Soporte celular", "SP-CEL-004", "Celulares", "SOPORTE", 14, 149.00));
     }
 
     private void loadMockupInitialTicket() {
-        // Estado inicial idéntico al mockup (Ticket #0482 · 3 artículos)
-        ticketItems.add(new TicketLineItem(catalogProducts.get(0), 1)); // Funda iPhone 14 x1 ($249.00)
-        ticketItems.add(new TicketLineItem(catalogProducts.get(1), 2)); // Cable USB-C 1m x2 ($198.00)
-        ticketItems.add(new TicketLineItem(catalogProducts.get(2), 1)); // Audífonos Bluetooth x1 ($450.00)
+        if (catalogProducts.size() >= 3) {
+            if (catalogProducts.get(0).getStock() >= 1) {
+                ticketItems.add(new TicketLineItem(catalogProducts.get(0), 1));
+            }
+            if (catalogProducts.get(1).getStock() >= 2) {
+                ticketItems.add(new TicketLineItem(catalogProducts.get(1), 2));
+            }
+            if (catalogProducts.get(2).getStock() >= 1) {
+                ticketItems.add(new TicketLineItem(catalogProducts.get(2), 1));
+            }
+        }
     }
 
     @FXML
@@ -112,14 +169,48 @@ public class VentasController {
 
     @FXML
     private void onSelectEfectivo() {
-        btnEfectivo.getStyleClass().add(PAYMENT_SELECTED_CLASS);
+        selectedPaymentMethod = MetodoPago.EFECTIVO;
+        if (!btnEfectivo.getStyleClass().contains(PAYMENT_SELECTED_CLASS)) {
+            btnEfectivo.getStyleClass().add(PAYMENT_SELECTED_CLASS);
+        }
         btnTarjeta.getStyleClass().remove(PAYMENT_SELECTED_CLASS);
     }
 
     @FXML
     private void onSelectTarjeta() {
-        btnTarjeta.getStyleClass().add(PAYMENT_SELECTED_CLASS);
+        selectedPaymentMethod = MetodoPago.TARJETA;
+        if (!btnTarjeta.getStyleClass().contains(PAYMENT_SELECTED_CLASS)) {
+            btnTarjeta.getStyleClass().add(PAYMENT_SELECTED_CLASS);
+        }
         btnEfectivo.getStyleClass().remove(PAYMENT_SELECTED_CLASS);
+    }
+
+    private void onCobrarVenta() {
+        if (ticketItems.isEmpty()) {
+            return;
+        }
+        try {
+            if (HibernateUtil.isConnected()) {
+                ventaDao.registrarVenta(currentFolio, ticketItems, selectedPaymentMethod);
+                loadCatalogFromDatabaseOrFallback();
+            } else {
+                // Descuento local si no hay conexión a PostgreSQL
+                for (TicketLineItem line : ticketItems) {
+                    line.getProduct().setStock(Math.max(0, line.getProduct().getStock() - line.getQuantity()));
+                }
+                MainLayoutController.setFallbackUnreadCount(MainLayoutController.getFallbackUnreadCount() + 1);
+            }
+            ticketItems.clear();
+            renderProductGrid();
+            renderTicket();
+            MainLayoutController.refreshNotificationBadge();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error al registrar venta");
+            alert.setHeaderText("No se pudo procesar el cobro");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     private void renderProductGrid() {
@@ -153,9 +244,20 @@ public class VentasController {
 
         StackPane thumb = new StackPane();
         thumb.getStyleClass().add("product-card-thumb");
-        Label tagLabel = new Label(product.getShortTag());
-        tagLabel.getStyleClass().add("product-card-tag");
-        thumb.getChildren().add(tagLabel);
+
+        Image productImage = ImageUtil.resolveProductImage(product);
+        if (productImage != null && !productImage.isError()) {
+            ImageView imageView = new ImageView(productImage);
+            imageView.setFitWidth(130);
+            imageView.setFitHeight(68);
+            imageView.setPreserveRatio(true);
+            imageView.setSmooth(true);
+            thumb.getChildren().add(imageView);
+        } else {
+            Label tagLabel = new Label(product.getShortTag());
+            tagLabel.getStyleClass().add("product-card-tag");
+            thumb.getChildren().add(tagLabel);
+        }
 
         Label nameLabel = new Label(product.getName());
         nameLabel.getStyleClass().add("product-card-name");
@@ -184,8 +286,25 @@ public class VentasController {
     }
 
     private void addProductToTicket(ProductItem product) {
+        if (product.getStock() <= 0) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Sin stock disponible");
+            alert.setHeaderText("Producto agotado");
+            alert.setContentText("El producto '" + product.getName() + "' no tiene unidades disponibles en inventario.");
+            alert.showAndWait();
+            return;
+        }
+
         for (TicketLineItem line : ticketItems) {
-            if (line.getProduct().getSku().equals(product.getSku())) {
+            if (isSameProduct(line.getProduct(), product)) {
+                if (line.getQuantity() + 1 > product.getStock()) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Stock máximo alcanzado");
+                    alert.setHeaderText("Cantidad límite en inventario");
+                    alert.setContentText("Solo hay " + product.getStock() + " unidades disponibles de '" + product.getName() + "'.");
+                    alert.showAndWait();
+                    return;
+                }
                 line.setQuantity(line.getQuantity() + 1);
                 renderTicket();
                 return;
@@ -193,6 +312,16 @@ public class VentasController {
         }
         ticketItems.add(new TicketLineItem(product, 1));
         renderTicket();
+    }
+
+    private boolean isSameProduct(ProductItem a, ProductItem b) {
+        if (a == b) {
+            return true;
+        }
+        if (a.getId() != null && b.getId() != null) {
+            return a.getId().equals(b.getId());
+        }
+        return a.getName().equalsIgnoreCase(b.getName()) && a.getSku().equalsIgnoreCase(b.getSku());
     }
 
     private void renderTicket() {
@@ -232,6 +361,14 @@ public class VentasController {
             Button btnPlus = new Button("+");
             btnPlus.getStyleClass().add("qty-btn");
             btnPlus.setOnAction(e -> {
+                if (item.getQuantity() + 1 > item.getProduct().getStock()) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Stock máximo alcanzado");
+                    alert.setHeaderText("Cantidad límite en inventario");
+                    alert.setContentText("Solo hay " + item.getProduct().getStock() + " unidades disponibles de '" + item.getProduct().getName() + "'.");
+                    alert.showAndWait();
+                    return;
+                }
                 item.setQuantity(item.getQuantity() + 1);
                 renderTicket();
             });
@@ -250,7 +387,7 @@ public class VentasController {
         double total = subtotal + iva;
 
         int distinctArticles = ticketItems.size();
-        lblTicketSubtitle.setText("Ticket #0482 · " + distinctArticles + (distinctArticles == 1 ? " artículo" : " artículos"));
+        lblTicketSubtitle.setText("Ticket " + currentFolio + " · " + distinctArticles + (distinctArticles == 1 ? " artículo" : " artículos"));
         lblSubtotal.setText(CurrencyUtil.format(subtotal));
         lblIva.setText(CurrencyUtil.format(iva));
         lblTotal.setText(CurrencyUtil.format(total));

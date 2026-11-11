@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.tpv_flux.controller.reportes.ReportesController"
+      spacing="18.0">
+
+    <padding>
+        <Insets top="24.0" right="28.0" bottom="24.0" left="28.0"/>
+    </padding>
+
+    <!-- CABECERA (Título + Selector de Rango + Botón Exportar)              -->
+    <HBox alignment="CENTER_LEFT" spacing="12.0">
+        <VBox spacing="2.0">
+            <Label text="Reportes" styleClass="page-title"/>
+            <Label fx:id="lblPeriodoSubtitulo" text="Sucursal Centro · Últimos 7 días" styleClass="page-subtitle"/>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <ComboBox fx:id="cmbPeriodo" prefWidth="155.0" styleClass="filter-combo"/>
+        <Button fx:id="btnExportar" text="Exportar" styleClass="secondary-action-btn"/>
+    </HBox>
+
+    <!-- 3 TARJETAS KPI SUPERIORES                                           -->
+    <GridPane hgap="14.0">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="33.33" hgrow="ALWAYS"/>
+            <ColumnConstraints percentWidth="33.33" hgrow="ALWAYS"/>
+            <ColumnConstraints percentWidth="33.34" hgrow="ALWAYS"/>
+        </columnConstraints>
+
+        <VBox spacing="5.0" styleClass="kpi-card" GridPane.columnIndex="0">
+            <Label text="Ventas totales" styleClass="kpi-label"/>
+            <Label fx:id="lblVentasTotales" text="\$86,420.00" styleClass="kpi-value"/>
+            <Label fx:id="lblTendenciaVentas" text="↑ 12% vs. semana anterior" styleClass="trend-up"/>
+        </VBox>
+
+        <VBox spacing="5.0" styleClass="kpi-card" GridPane.columnIndex="1">
+            <Label text="Ticket promedio" styleClass="kpi-label"/>
+            <Label fx:id="lblTicketPromedio" text="\$312.40" styleClass="kpi-value"/>
+            <Label fx:id="lblTendenciaTicket" text="↑ 4% vs. semana anterior" styleClass="trend-up"/>
+        </VBox>
+
+        <VBox spacing="5.0" styleClass="kpi-card" GridPane.columnIndex="2">
+            <Label text="Productos vendidos" styleClass="kpi-label"/>
+            <Label fx:id="lblProductosVendidos" text="277" styleClass="kpi-value"/>
+            <Label fx:id="lblTendenciaProductos" text="↓ 3% vs. semana anterior" styleClass="trend-down"/>
+        </VBox>
+    </GridPane>
+
+    <!-- SECCIÓN PRINCIPAL: GRÁFICA DE BARRAS (IZQ) + CATEGORÍAS/TOP (DER)   -->
+    <GridPane hgap="16.0" VBox.vgrow="ALWAYS">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="62.0" hgrow="ALWAYS"/>
+            <ColumnConstraints percentWidth="38.0" hgrow="ALWAYS"/>
+        </columnConstraints>
+
+        <!-- Tarjeta Izquierda: Ventas de los últimos 7 días -->
+        <VBox styleClass="surface-card" GridPane.columnIndex="0" VBox.vgrow="ALWAYS" spacing="12.0">
+            <padding>
+                <Insets top="20.0" right="24.0" bottom="20.0" left="24.0"/>
+            </padding>
+
+            <Label text="Ventas de los últimos 7 días" styleClass="ticket-title"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <HBox fx:id="barsContainer" alignment="BOTTOM_CENTER" spacing="28.0" prefHeight="250.0"/>
+        </VBox>
+
+        <!-- Columna Derecha: Ventas por categoría + Productos más vendidos -->
+        <VBox spacing="16.0" GridPane.columnIndex="1" VBox.vgrow="ALWAYS">
+            <!-- Tarjeta Superior: Ventas por categoría -->
+            <VBox styleClass="surface-card" spacing="14.0">
+                <padding>
+                    <Insets top="18.0" right="22.0" bottom="18.0" left="22.0"/>
+                </padding>
+
+                <Label text="Ventas por categoría" styleClass="ticket-title"/>
+                <VBox fx:id="categoriasProgressContainer" spacing="12.0"/>
+            </VBox>
+
+            <!-- Tarjeta Inferior: Productos más vendidos -->
+            <VBox styleClass="surface-card" VBox.vgrow="ALWAYS" spacing="14.0">
+                <padding>
+                    <Insets top="18.0" right="22.0" bottom="18.0" left="22.0"/>
+                </padding>
+
+                <Label text="Productos más vendidos" styleClass="ticket-title"/>
+                <VBox fx:id="topProductosContainer" spacing="12.0"/>
+            </VBox>
+        </VBox>
+    </GridPane>
+
+</VBox>

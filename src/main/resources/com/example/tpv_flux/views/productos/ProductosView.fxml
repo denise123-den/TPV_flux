@@ -23,9 +23,7 @@
         <Insets top="24.0" right="28.0" bottom="24.0" left="28.0"/>
     </padding>
 
-    <!-- =================================================================== -->
     <!-- CABECERA (Título + Contador + Botón "+ Nuevo producto")             -->
-    <!-- =================================================================== -->
     <HBox alignment="CENTER_LEFT">
         <VBox spacing="2.0">
             <Label text="Productos" styleClass="page-title"/>
@@ -37,9 +35,7 @@
         <Button fx:id="btnNuevoProducto" text="+ Nuevo producto" styleClass="primary-action-btn"/>
     </HBox>
 
-    <!-- =================================================================== -->
     <!-- BARRA DE FILTROS (Buscador + Categorías + Estado)                   -->
-    <!-- =================================================================== -->
     <HBox spacing="12.0" alignment="CENTER_LEFT">
         <HBox HBox.hgrow="ALWAYS" styleClass="search-box-container-white">
             <FontIcon iconLiteral="fth-search"/>
@@ -52,9 +48,7 @@
         <ComboBox fx:id="cmbEstados" prefWidth="155.0" styleClass="filter-combo"/>
     </HBox>
 
-    <!-- =================================================================== -->
     <!-- TABLA DE PRODUCTOS (Tarjeta blanca redondeada)                      -->
-    <!-- =================================================================== -->
     <VBox VBox.vgrow="ALWAYS" styleClass="surface-card">
         <!-- Encabezado de columnas -->
         <GridPane styleClass="table-header-row">

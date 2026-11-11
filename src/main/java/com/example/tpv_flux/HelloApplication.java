@@ -1,6 +1,7 @@
 package com.example.tpv_flux;
 
 import atlantafx.base.theme.PrimerLight;
+import com.example.tpv_flux.config.HibernateUtil;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -15,7 +16,7 @@ public class HelloApplication extends Application {
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
 
         FXMLLoader fxmlLoader = new FXMLLoader(
-                HelloApplication.class.getResource("/com/example/tpv_flux/views/layout/MainLayout.fxml")
+                HelloApplication.class.getResource("/com/example/tpv_flux/views/auth/LoginView.fxml")
         );
         Scene scene = new Scene(fxmlLoader.load(), 1280, 800);
         stage.setTitle("TPV Core — Accesorios de cómputo y celulares");
@@ -23,5 +24,10 @@ public class HelloApplication extends Application {
         stage.setMinHeight(700);
         stage.setScene(scene);
         stage.show();
+    }
+
+    @Override
+    public void stop() {
+        HibernateUtil.shutdown();
     }
 }

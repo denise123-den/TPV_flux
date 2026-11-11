@@ -18,9 +18,7 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.tpv_flux.controller.ventas.VentasController">
 
-    <!-- =================================================================== -->
     <!-- BARRA SUPERIOR (Buscador + Estado de Caja/Turno)                    -->
-    <!-- =================================================================== -->
     <top>
         <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="top-header-bar">
             <HBox HBox.hgrow="ALWAYS" styleClass="search-box-container">
@@ -31,15 +29,13 @@
             </HBox>
 
             <VBox alignment="CENTER_RIGHT" spacing="1.0">
-                <Label text="Sucursal Centro · Caja 1" styleClass="branch-title"/>
-                <Label text="Turno abierto · 09:03 am" styleClass="branch-subtitle"/>
+                <Label fx:id="lblBranchTitle" text="Sucursal Centro · Caja 1" styleClass="branch-title"/>
+                <Label fx:id="lblBranchSubtitle" text="Turno abierto · 09:03 am" styleClass="branch-subtitle"/>
             </VBox>
         </HBox>
     </top>
 
-    <!-- =================================================================== -->
     <!-- CATÁLOGO DE PRODUCTOS (Centro)                                      -->
-    <!-- =================================================================== -->
     <center>
         <VBox spacing="16.0">
             <padding>
@@ -77,9 +73,7 @@
         </VBox>
     </center>
 
-    <!-- =================================================================== -->
     <!-- PANEL DE VENTA ACTUAL / TICKET (Derecha)                            -->
-    <!-- =================================================================== -->
     <right>
         <VBox styleClass="ticket-panel">
             <!-- Encabezado del ticket -->

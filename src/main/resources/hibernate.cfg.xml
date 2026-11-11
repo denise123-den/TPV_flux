@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- Conexión a PostgreSQL local -->
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/TPV_flux</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <property name="hibernate.connection.password">Luna!11</property>
+
+        <!-- Pool de conexiones básico -->
+        <property name="hibernate.connection.pool_size">5</property>
+
+        <!-- Actualización automática de esquema -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Logs de consultas SQL en consola -->
+        <property name="hibernate.show_sql">false</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <!-- Entidades mapeadas -->
+        <mapping class="com.example.tpv_flux.model.Categoria"/>
+        <mapping class="com.example.tpv_flux.model.Producto"/>
+        <mapping class="com.example.tpv_flux.model.MovimientoInventario"/>
+        <mapping class="com.example.tpv_flux.model.MetodoPago"/>
+        <mapping class="com.example.tpv_flux.model.Venta"/>
+        <mapping class="com.example.tpv_flux.model.DetalleVenta"/>
+        <mapping class="com.example.tpv_flux.model.Notificacion"/>
+        <mapping class="com.example.tpv_flux.model.Usuario"/>
+    </session-factory>
+</hibernate-configuration>

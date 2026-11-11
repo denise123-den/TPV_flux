@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.tpv_flux.controller.inventario.InventarioController"
+      spacing="18.0">
+
+    <padding>
+        <Insets top="24.0" right="28.0" bottom="24.0" left="28.0"/>
+    </padding>
+
+    <!-- CABECERA (Título + Botón "+ Registrar movimiento")                  -->
+    <HBox alignment="CENTER_LEFT">
+        <VBox spacing="2.0">
+            <Label text="Inventario" styleClass="page-title"/>
+            <Label fx:id="lblSucursalSubtitulo" text="Sucursal Centro" styleClass="page-subtitle"/>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="btnRegistrarMovimiento" text="+ Registrar movimiento" styleClass="primary-action-btn"/>
+    </HBox>
+
+    <!-- 4 TARJETAS KPI DE INVENTARIO                                        -->
+    <GridPane hgap="14.0">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="25.0" hgrow="ALWAYS"/>
+            <ColumnConstraints percentWidth="25.0" hgrow="ALWAYS"/>
+            <ColumnConstraints percentWidth="25.0" hgrow="ALWAYS"/>
+            <ColumnConstraints percentWidth="25.0" hgrow="ALWAYS"/>
+        </columnConstraints>
+
+        <VBox spacing="6.0" styleClass="kpi-card" GridPane.columnIndex="0">
+            <Label text="Total de productos" styleClass="kpi-label"/>
+            <Label fx:id="lblTotalProductos" text="184" styleClass="kpi-value"/>
+        </VBox>
+
+        <VBox spacing="6.0" styleClass="kpi-card" GridPane.columnIndex="1">
+            <Label text="Valor de inventario" styleClass="kpi-label"/>
+            <Label fx:id="lblValorInventario" text="\$312,450.00" styleClass="kpi-value"/>
+        </VBox>
+
+        <VBox spacing="6.0" styleClass="kpi-card-warning" GridPane.columnIndex="2">
+            <Label text="Stock bajo" styleClass="kpi-label-warning"/>
+            <Label fx:id="lblStockBajo" text="6 productos" styleClass="kpi-value-warning"/>
+        </VBox>
+
+        <VBox spacing="6.0" styleClass="kpi-card-danger" GridPane.columnIndex="3">
+            <Label text="Sin stock" styleClass="kpi-label-danger"/>
+            <Label fx:id="lblSinStock" text="2 productos" styleClass="kpi-value-danger"/>
+        </VBox>
+    </GridPane>
+
+    <!-- TABLA DE MOVIMIENTOS RECIENTES                                      -->
+    <VBox VBox.vgrow="ALWAYS" styleClass="surface-card">
+        <HBox alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="16.0" right="20.0" bottom="8.0" left="20.0"/>
+            </padding>
+            <Label text="Movimientos recientes" styleClass="ticket-title"/>
+        </HBox>
+
+        <GridPane styleClass="table-header-row">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="16.0"/>
+                <ColumnConstraints percentWidth="28.0"/>
+                <ColumnConstraints percentWidth="14.0"/>
+                <ColumnConstraints percentWidth="12.0" halignment="RIGHT"/>
+                <ColumnConstraints percentWidth="15.0"/>
+                <ColumnConstraints percentWidth="15.0"/>
+            </columnConstraints>
+
+            <Label text="Fecha" styleClass="table-header-label" GridPane.columnIndex="0"/>
+            <Label text="Producto" styleClass="table-header-label" GridPane.columnIndex="1"/>
+            <Label text="Tipo" styleClass="table-header-label" GridPane.columnIndex="2"/>
+            <Label text="Cantidad" styleClass="table-header-label" GridPane.columnIndex="3">
+                <GridPane.margin>
+                    <Insets right="24.0"/>
+                </GridPane.margin>
+            </Label>
+            <Label text="Usuario" styleClass="table-header-label" GridPane.columnIndex="4"/>
+            <Label text="Motivo" styleClass="table-header-label" GridPane.columnIndex="5"/>
+        </GridPane>
+
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="clean-scroll">
+            <VBox fx:id="movementsRowsContainer"/>
+        </ScrollPane>
+    </VBox>
+
+</VBox>
