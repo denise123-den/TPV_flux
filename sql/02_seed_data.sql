@@ -45,7 +45,7 @@ INSERT INTO productos (nombre, descripcion, categoria_id, costo, precio_venta, f
         (SELECT id FROM categorias WHERE nombre = 'Cómputo'),
         45.00,
         99.00,
-        'd1.jpeg',
+        'USB.jpeg',
         42,
         TRUE
     ),
@@ -55,7 +55,7 @@ INSERT INTO productos (nombre, descripcion, categoria_id, costo, precio_venta, f
         (SELECT id FROM categorias WHERE nombre = 'Audio'),
         230.00,
         450.00,
-        'biblio.jpeg',
+        'audiculares.jpeg',
         6,
         TRUE
     ),
@@ -65,7 +65,7 @@ INSERT INTO productos (nombre, descripcion, categoria_id, costo, precio_venta, f
         (SELECT id FROM categorias WHERE nombre = 'Cómputo'),
         95.00,
         189.00,
-        'upp.jpeg',
+        'Cargador.jpeg',
         25,
         TRUE
     ),
@@ -75,7 +75,7 @@ INSERT INTO productos (nombre, descripcion, categoria_id, costo, precio_venta, f
         (SELECT id FROM categorias WHERE nombre = 'Celulares'),
         25.00,
         79.00,
-        'logo.png',
+        'Mica.jpeg',
         0,
         TRUE
     ),
@@ -85,7 +85,7 @@ INSERT INTO productos (nombre, descripcion, categoria_id, costo, precio_venta, f
         (SELECT id FROM categorias WHERE nombre = 'Cómputo'),
         210.00,
         399.00,
-        'logotarea.png',
+        'Power.jpeg',
         11,
         TRUE
     ),
@@ -95,7 +95,7 @@ INSERT INTO productos (nombre, descripcion, categoria_id, costo, precio_venta, f
         (SELECT id FROM categorias WHERE nombre = 'Cómputo'),
         65.00,
         129.00,
-        'd1.jpeg',
+        'Memoria.jpeg',
         30,
         TRUE
     ),
@@ -105,7 +105,7 @@ INSERT INTO productos (nombre, descripcion, categoria_id, costo, precio_venta, f
         (SELECT id FROM categorias WHERE nombre = 'Celulares'),
         70.00,
         149.00,
-        'iphon.jpeg',
+        'Soporte.jpeg',
         14,
         TRUE
     );

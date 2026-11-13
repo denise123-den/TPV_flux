@@ -130,13 +130,13 @@ public class InventarioController {
 
     private void loadMockupProductsAndMovements() {
         catalogProducts.add(new ProductItem(1, "Funda iPhone 14", "FN-IP14-001", "Celulares", "FUNDA", 18, 249.00, "iphon.jpeg"));
-        catalogProducts.add(new ProductItem(2, "Cable USB-C 1m", "CB-USBC-100", "Cómputo", "CABLE", 42, 99.00, "d1.jpeg"));
-        catalogProducts.add(new ProductItem(3, "Audífonos Bluetooth X2", "AU-BT-X2", "Audio", "AUDIO", 6, 450.00, "biblio.jpeg"));
-        catalogProducts.add(new ProductItem(4, "Cargador 20W", "CG-20W-002", "Cómputo", "CARGA", 25, 189.00, "upp.jpeg"));
-        catalogProducts.add(new ProductItem(5, "Mica templada iPhone 14", "MC-IP14-01", "Celulares", "MICA", 0, 79.00, "logo.png"));
-        catalogProducts.add(new ProductItem(6, "Power bank 10000mAh", "PB-10K-003", "Cómputo", "POWER", 11, 399.00, "logotarea.png"));
-        catalogProducts.add(new ProductItem(7, "Memoria USB 32GB", "MU-32GB-01", "Cómputo", "USB", 30, 129.00, "d1.jpeg"));
-        catalogProducts.add(new ProductItem(8, "Soporte celular", "SP-CEL-004", "Celulares", "SOPORTE", 14, 149.00, "iphon.jpeg"));
+        catalogProducts.add(new ProductItem(2, "Cable USB-C 1m", "CB-USBC-100", "Cómputo", "CABLE", 42, 99.00, "USB.jpeg"));
+        catalogProducts.add(new ProductItem(3, "Audífonos Bluetooth X2", "AU-BT-X2", "Audio", "AUDIO", 6, 450.00, "audiculares.jpeg"));
+        catalogProducts.add(new ProductItem(4, "Cargador 20W", "CG-20W-002", "Cómputo", "CARGA", 25, 189.00, "Cargador.jpeg"));
+        catalogProducts.add(new ProductItem(5, "Mica templada iPhone 14", "MC-IP14-01", "Celulares", "MICA", 0, 79.00, "Mica.jpeg"));
+        catalogProducts.add(new ProductItem(6, "Power bank 10000mAh", "PB-10K-003", "Cómputo", "POWER", 11, 399.00, "Power.jpeg"));
+        catalogProducts.add(new ProductItem(7, "Memoria USB 32GB", "MU-32GB-01", "Cómputo", "USB", 30, 129.00, "Memoria.jpeg"));
+        catalogProducts.add(new ProductItem(8, "Soporte celular", "SP-CEL-004", "Celulares", "SOPORTE", 14, 149.00, "Soporte.jpeg"));
 
         movementRows.add(new MovementRowData("30 sep · 09:10", "Funda iPhone 14", "Entrada", 50, "Ana Martínez", "Reabastecimiento"));
         movementRows.add(new MovementRowData("30 sep · 09:45", "Cable USB-C 1m", "Salida", -2, "Sistema", "Venta #0479"));

@@ -144,12 +144,13 @@ public class ProductosController {
 
     private void loadMockupProducts() {
         products.add(new ProductItem("Funda iPhone 14", "FN-IP14-001", "Celulares", "FUNDA", 18, 249.00, "iphon.jpeg"));
-        products.add(new ProductItem("Cable USB-C 1m", "CB-USBC-100", "Cómputo", "CABLE", 42, 99.00, "d1.jpeg"));
-        products.add(new ProductItem("Audífonos Bluetooth X2", "AU-BT-X2", "Audio", "AUDIO", 6, 450.00, "biblio.jpeg"));
-        products.add(new ProductItem("Cargador 20W", "CG-20W-002", "Cómputo", "CARGA", 25, 189.00, "upp.jpeg"));
-        products.add(new ProductItem("Mica templada iPhone 14", "MC-IP14-01", "Celulares", "MICA", 0, 79.00, "logo.png"));
-        products.add(new ProductItem("Power bank 10000mAh", "PB-10K-003", "Cómputo", "POWER", 11, 399.00, "logotarea.png"));
-        products.add(new ProductItem("Memoria USB 32GB", "MU-32GB-01", "Cómputo", "USB", 30, 129.00, "d1.jpeg"));
+        products.add(new ProductItem("Cable USB-C 1m", "CB-USBC-100", "Cómputo", "CABLE", 42, 99.00, "USB.jpeg"));
+        products.add(new ProductItem("Audífonos Bluetooth X2", "AU-BT-X2", "Audio", "AUDIO", 6, 450.00, "audiculares.jpeg"));
+        products.add(new ProductItem("Cargador 20W", "CG-20W-002", "Cómputo", "CARGA", 25, 189.00, "Cargador.jpeg"));
+        products.add(new ProductItem("Mica templada iPhone 14", "MC-IP14-01", "Celulares", "MICA", 0, 79.00, "Mica.jpeg"));
+        products.add(new ProductItem("Power bank 10000mAh", "PB-10K-003", "Cómputo", "POWER", 11, 399.00, "Power.jpeg"));
+        products.add(new ProductItem("Memoria USB 32GB", "MU-32GB-01", "Cómputo", "USB", 30, 129.00, "Memoria.jpeg"));
+        products.add(new ProductItem("Soporte celular", "SP-CEL-004", "Celulares", "SOPORTE", 14, 149.00, "Soporte.jpeg"));
     }
 
     private void onOpenNuevoProductoModal() {
@@ -350,6 +351,9 @@ public class ProductosController {
 
             String extraDesc = txtDescripcion.getText() == null ? "" : txtDescripcion.getText().trim();
             String fullDesc = "SKU: " + sku + " | TAG: " + tag + (extraDesc.isEmpty() ? "" : " | " + extraDesc);
+            String photoToSave = selectedPhotoName.get() != null
+                    ? selectedPhotoName.get()
+                    : ImageUtil.resolveDefaultFileName(nombre, tag);
 
             try {
                 if (HibernateUtil.isConnected()) {
@@ -361,7 +365,7 @@ public class ProductosController {
                             categoriaEntity,
                             BigDecimal.valueOf(costoVal),
                             BigDecimal.valueOf(precioVal),
-                            selectedPhotoName.get(),
+                            photoToSave,
                             stockVal,
                             true
                     );
@@ -376,7 +380,7 @@ public class ProductosController {
                             tag,
                             stockVal,
                             precioVal,
-                            selectedPhotoName.get()
+                            photoToSave
                     ));
                 }
                 updateSummaryLabel();

@@ -18,13 +18,17 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Utilidad para cargar imágenes de productos desde:
  * 1. La referencia guardada en la columna 'foto' de PostgreSQL (nombre de archivo, ruta de recurso, ruta en disco o URL).
- * 2. Carpeta de recursos '/com/example/tpv_flux/images/productos/' buscando automáticamente por SKU o etiqueta corta.
+ * 2. Mapeo directo a las imágenes en '/imagenes/' según el nombre o etiqueta del producto.
+ * 3. Búsqueda automática por SKU o etiqueta corta en '/imagenes/' y '/com/example/tpv_flux/images/productos/'.
  */
 public final class ImageUtil {
 
     public static final String RESOURCES_IMAGE_DIR = "/com/example/tpv_flux/images/productos/";
     public static final String ALT_RESOURCES_IMAGE_DIR = "/imagenes/";
-    private static final List<String> EXTENSIONS = List.of(".png", ".jpg", ".jpeg", ".webp", ".gif");
+    private static final List<String> EXTENSIONS = List.of(".jpeg", ".jpg", ".png", ".webp", ".gif");
+    private static final List<String> LEGACY_PLACEHOLDERS = List.of(
+            "d1.jpeg", "biblio.jpeg", "upp.jpeg", "logo.png", "logotarea.png"
+    );
     private static final Map<String, Image> IMAGE_CACHE = new ConcurrentHashMap<>();
 
     private ImageUtil() {
@@ -34,21 +38,54 @@ public final class ImageUtil {
         IMAGE_CACHE.clear();
     }
 
+    public static boolean isLegacyPlaceholder(String photoRef) {
+        if (photoRef == null || photoRef.isBlank()) {
+            return false;
+        }
+        String clean = photoRef.trim();
+        for (String legacy : LEGACY_PLACEHOLDERS) {
+            if (legacy.equalsIgnoreCase(clean) || clean.toLowerCase(Locale.ROOT).endsWith("/" + legacy) || clean.toLowerCase(Locale.ROOT).endsWith("\\" + legacy)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String resolvePhotoReference(String currentPhoto, String productName, String shortTag) {
+        if (currentPhoto != null && !currentPhoto.isBlank() && !isLegacyPlaceholder(currentPhoto)) {
+            String trimmed = currentPhoto.trim();
+            if (loadFromReference(trimmed) != null) {
+                return trimmed;
+            }
+        }
+        String mapped = resolveDefaultFileName(productName, shortTag);
+        return mapped != null ? mapped : currentPhoto;
+    }
+
     public static Image resolveProductImage(ProductItem product) {
         if (product == null) {
             return null;
         }
 
-        // 1. Intentar con la ruta/referencia explícita guardada en la columna 'foto' de la BD
+        // 1. Intentar con la ruta/referencia explícita guardada en la columna 'foto' de la BD (ignorando placeholders antiguos eliminados)
         String photoRef = product.getPhoto();
-        if (photoRef != null && !photoRef.isBlank()) {
+        if (photoRef != null && !photoRef.isBlank() && !isLegacyPlaceholder(photoRef)) {
             Image fromRef = loadFromReference(photoRef.trim());
             if (fromRef != null) {
                 return fromRef;
             }
         }
 
-        // 2. Buscar automáticamente por SKU (ej. FN-IP14-001.png) en resources/com/example/tpv_flux/images/productos/
+        // 2. Resolver por nombre o etiqueta del producto hacia las imágenes de src/main/resources/imagenes/
+        String mappedFileName = resolveDefaultFileName(product.getName(), product.getShortTag());
+        if (mappedFileName != null) {
+            Image fromMapped = loadFromReference(mappedFileName);
+            if (fromMapped != null) {
+                return fromMapped;
+            }
+        }
+
+        // 3. Buscar automáticamente por SKU (ej. FN-IP14-001.jpeg)
         if (product.getSku() != null && !product.getSku().isBlank()) {
             Image bySku = findInResourcesByBaseName(product.getSku().trim());
             if (bySku != null) {
@@ -56,9 +93,9 @@ public final class ImageUtil {
             }
         }
 
-        // 3. Buscar automáticamente por etiqueta corta en minúsculas (ej. funda.png, cable.png, audio.png)
+        // 4. Buscar automáticamente por etiqueta corta
         if (product.getShortTag() != null && !product.getShortTag().isBlank()) {
-            Image byTag = findInResourcesByBaseName(product.getShortTag().trim().toLowerCase(Locale.ROOT));
+            Image byTag = findInResourcesByBaseName(product.getShortTag().trim());
             if (byTag != null) {
                 return byTag;
             }
@@ -67,11 +104,54 @@ public final class ImageUtil {
         return null;
     }
 
+    /**
+     * Devuelve el nombre de archivo de imagen en src/main/resources/imagenes/ correspondiente a cada producto.
+     */
+    public static String resolveDefaultFileName(String productName, String shortTag) {
+        String nameLower = productName != null ? productName.toLowerCase(Locale.ROOT) : "";
+        String tagUpper = shortTag != null ? shortTag.trim().toUpperCase(Locale.ROOT) : "";
+
+        if (nameLower.contains("funda") || "FUNDA".equals(tagUpper)) {
+            return "iphon.jpeg";
+        }
+        if (nameLower.contains("cable") || "CABLE".equals(tagUpper)) {
+            return "USB.jpeg";
+        }
+        if (nameLower.contains("aud") || "AUDIO".equals(tagUpper)) {
+            return "audiculares.jpeg";
+        }
+        if (nameLower.contains("cargador") || "CARGA".equals(tagUpper)) {
+            return "Cargador.jpeg";
+        }
+        if (nameLower.contains("mica") || "MICA".equals(tagUpper)) {
+            return "Mica.jpeg";
+        }
+        if (nameLower.contains("power") || "POWER".equals(tagUpper)) {
+            return "Power.jpeg";
+        }
+        if (nameLower.contains("memoria") || "USB".equals(tagUpper)) {
+            return "Memoria.jpeg";
+        }
+        if (nameLower.contains("soporte") || "SOPORTE".equals(tagUpper)) {
+            return "Soporte.jpeg";
+        }
+        return null;
+    }
+
     public static Image loadFromReference(String ref) {
         if (ref == null || ref.isBlank()) {
             return null;
         }
-        return IMAGE_CACHE.computeIfAbsent(ref, ImageUtil::loadInternal);
+        String trimmed = ref.trim();
+        Image cached = IMAGE_CACHE.get(trimmed);
+        if (cached != null) {
+            return cached;
+        }
+        Image loaded = loadInternal(trimmed);
+        if (loaded != null) {
+            IMAGE_CACHE.put(trimmed, loaded);
+        }
+        return loaded;
     }
 
     private static Image loadInternal(String ref) {

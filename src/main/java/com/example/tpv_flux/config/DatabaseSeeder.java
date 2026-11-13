@@ -43,11 +43,15 @@ public final class DatabaseSeeder {
                 Long productCount = session.createQuery("SELECT COUNT(p) FROM Producto p", Long.class).uniqueResult();
                 Long ventaCount = session.createQuery("SELECT COUNT(v) FROM Venta v", Long.class).uniqueResult();
 
+                tx = session.beginTransaction();
+
+                // Sincronizar siempre las imágenes de los productos con los archivos actuales en src/main/resources/imagenes/
+                syncProductImages(session);
+
                 if (userCount != null && userCount > 0 && productCount != null && productCount > 0 && ventaCount != null && ventaCount > 0) {
+                    tx.commit();
                     return;
                 }
-
-                tx = session.beginTransaction();
 
             // 0. Usuarios del sistema (Mockup Página 1 y Sidebar)
             ensureUsuario(
@@ -108,7 +112,7 @@ public final class DatabaseSeeder {
                         catComputo,
                         new BigDecimal("45.00"),
                         new BigDecimal("99.00"),
-                        "d1.jpeg",
+                        "USB.jpeg",
                         42,
                         true
                 );
@@ -118,7 +122,7 @@ public final class DatabaseSeeder {
                         catAudio,
                         new BigDecimal("230.00"),
                         new BigDecimal("450.00"),
-                        "biblio.jpeg",
+                        "audiculares.jpeg",
                         6,
                         true
                 );
@@ -128,7 +132,7 @@ public final class DatabaseSeeder {
                         catComputo,
                         new BigDecimal("95.00"),
                         new BigDecimal("189.00"),
-                        "upp.jpeg",
+                        "Cargador.jpeg",
                         25,
                         true
                 );
@@ -138,7 +142,7 @@ public final class DatabaseSeeder {
                         catCelulares,
                         new BigDecimal("25.00"),
                         new BigDecimal("79.00"),
-                        "logo.png",
+                        "Mica.jpeg",
                         0,
                         true
                 );
@@ -148,7 +152,7 @@ public final class DatabaseSeeder {
                         catComputo,
                         new BigDecimal("210.00"),
                         new BigDecimal("399.00"),
-                        "logotarea.png",
+                        "Power.jpeg",
                         11,
                         true
                 );
@@ -158,7 +162,7 @@ public final class DatabaseSeeder {
                         catComputo,
                         new BigDecimal("65.00"),
                         new BigDecimal("129.00"),
-                        "d1.jpeg",
+                        "Memoria.jpeg",
                         30,
                         true
                 );
@@ -168,7 +172,7 @@ public final class DatabaseSeeder {
                         catCelulares,
                         new BigDecimal("70.00"),
                         new BigDecimal("149.00"),
-                        "iphon.jpeg",
+                        "Soporte.jpeg",
                         14,
                         true
                 );
@@ -268,6 +272,16 @@ public final class DatabaseSeeder {
                     }
                 }
                 System.err.println("[TPV_flux] Error al inicializar datos semilla: " + e.getMessage());
+            }
+        }
+    }
+
+    private static void syncProductImages(Session session) {
+        var productos = session.createQuery("FROM Producto p", Producto.class).getResultList();
+        for (Producto p : productos) {
+            String mapped = com.example.tpv_flux.util.ImageUtil.resolveDefaultFileName(p.getNombre(), p.extractShortTag());
+            if (mapped != null && !mapped.equals(p.getFoto())) {
+                p.setFoto(mapped);
             }
         }
     }

@@ -135,6 +135,16 @@ class FxmlLoadingTest {
             System.out.println("[TPV_flux] Productos 'milk' eliminados de BD: " + borradosMilk);
 
             var productos = productoDao.findAllActive();
+            for (Producto p : productos) {
+                System.out.println("[TPV_flux] Producto en BD: " + p.getNombre() + " -> foto=" + p.getFoto());
+                var img = ImageUtil.resolveProductImage(p.toProductItem());
+                assertNotNull(
+                        img,
+                        "Debe cargar la imagen para el producto de BD: " + p.getNombre() + " (foto=" + p.getFoto() + ")"
+                );
+                org.junit.jupiter.api.Assertions.assertFalse(img.isError(), "La imagen no debe tener error de decodificación: " + p.getFoto());
+                org.junit.jupiter.api.Assertions.assertTrue(img.getWidth() > 0 && img.getHeight() > 0, "La imagen debe tener dimensiones válidas: " + p.getFoto());
+            }
             var movimientos = new com.example.tpv_flux.dao.InventarioDao().findRecent(10);
             var ventas = new com.example.tpv_flux.dao.VentaDao().findRecent(10);
             var notificaciones = new com.example.tpv_flux.dao.NotificacionDao().findAll();

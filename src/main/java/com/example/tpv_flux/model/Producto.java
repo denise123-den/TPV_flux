@@ -170,15 +170,17 @@ public class Producto {
     }
 
     public ProductItem toProductItem() {
+        String shortTag = extractShortTag();
+        String resolvedFoto = com.example.tpv_flux.util.ImageUtil.resolvePhotoReference(foto, nombre, shortTag);
         return new ProductItem(
                 id,
                 nombre,
                 extractSku(),
                 categoria != null ? categoria.getNombre() : "General",
-                extractShortTag(),
+                shortTag,
                 stockActual != null ? stockActual : 0,
                 precioVenta != null ? precioVenta.doubleValue() : 0.0,
-                foto
+                resolvedFoto
         );
     }
 }
