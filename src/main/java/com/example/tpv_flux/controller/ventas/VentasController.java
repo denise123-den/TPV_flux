@@ -185,9 +185,156 @@ public class VentasController {
         btnEfectivo.getStyleClass().remove(PAYMENT_SELECTED_CLASS);
     }
 
+    /**
+     * Muestra una ventana modal (sin decoración nativa) para cobro en efectivo y calcula el cambio.
+     * @return true si el cajero confirmó el cobro.
+     */
+    private boolean mostrarDialogoEfectivo(double total) {
+        final String emerald = "#128C6E";
+        final String mint = "#E6F4EA";
+        final String dark = "#1F2937";
+        final String gray = "#D1D5DB";
+        final String font = "-fx-font-family: 'Segoe UI', 'Inter', sans-serif;";
+
+        javafx.stage.Stage stage = new javafx.stage.Stage(javafx.stage.StageStyle.TRANSPARENT);
+        stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        if (btnCobrar.getScene() != null) {
+            stage.initOwner(btnCobrar.getScene().getWindow());
+        }
+        final boolean[] confirmado = {false};
+
+        // Cabecera
+        Label title = new Label("Pago en efectivo");
+        title.setStyle(font + "-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: " + dark + ";");
+        Region headerSpacer = new Region();
+        HBox.setHgrow(headerSpacer, Priority.ALWAYS);
+        Button btnClose = new Button("✕");
+        String closeBase = "-fx-background-color: transparent; -fx-text-fill: " + gray
+                + "; -fx-font-size: 16px; -fx-cursor: hand; -fx-background-radius: 8; -fx-focus-color: transparent; -fx-faint-focus-color: transparent;";
+        btnClose.setStyle(closeBase);
+        btnClose.setOnMouseEntered(e -> btnClose.setStyle(closeBase + "-fx-text-fill: " + dark + ";"));
+        btnClose.setOnMouseExited(e -> btnClose.setStyle(closeBase));
+        btnClose.setOnAction(e -> stage.close());
+        HBox header = new HBox(title, headerSpacer, btnClose);
+        header.setAlignment(Pos.CENTER_LEFT);
+
+        // Total
+        Label lblTotalTitulo = new Label("Total a cobrar:");
+        lblTotalTitulo.setStyle(font + "-fx-font-size: 13px; -fx-text-fill: " + dark + ";");
+        Label lblTotalMonto = new Label(CurrencyUtil.format(total));
+        lblTotalMonto.setStyle(font + "-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: #0B6B54;");
+        VBox totalBox = new VBox(4, lblTotalTitulo, lblTotalMonto);
+        totalBox.setPadding(new javafx.geometry.Insets(16, 20, 16, 20));
+        totalBox.setStyle("-fx-background-color: " + mint + "; -fx-background-radius: 12;");
+
+        // Input con "$" fijo
+        Label lblRecibido = new Label("Monto recibido del cliente:");
+        lblRecibido.setStyle(font + "-fx-font-size: 13px; -fx-text-fill: " + dark + ";");
+        Label dollar = new Label("$");
+        dollar.setStyle(font + "-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: " + dark + ";");
+        TextField txtRecibido = new TextField();
+        txtRecibido.setPromptText("0.00");
+        txtRecibido.setStyle("-fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0;"
+                + "-fx-focus-color: transparent; -fx-faint-focus-color: transparent;"
+                + font + "-fx-font-size: 22px; -fx-text-fill: " + dark + ";");
+        HBox.setHgrow(txtRecibido, Priority.ALWAYS);
+        HBox inputBox = new HBox(8, dollar, txtRecibido);
+        inputBox.setAlignment(Pos.CENTER_LEFT);
+        inputBox.setPadding(new javafx.geometry.Insets(12, 16, 12, 16));
+        String inputIdle = "-fx-background-color: white; -fx-background-radius: 12; -fx-border-radius: 12;"
+                + "-fx-border-width: 1.5; -fx-border-color: " + gray + ";";
+        String inputFocus = "-fx-background-color: white; -fx-background-radius: 12; -fx-border-radius: 12;"
+                + "-fx-border-width: 2; -fx-border-color: " + emerald + ";"
+                + "-fx-effect: dropshadow(gaussian, rgba(18,140,110,0.25), 8, 0, 0, 0);";
+        inputBox.setStyle(inputIdle);
+        txtRecibido.focusedProperty().addListener((obs, o, focused) ->
+                inputBox.setStyle(focused ? inputFocus : inputIdle));
+        VBox inputSection = new VBox(8, lblRecibido, inputBox);
+
+        // Cambio
+        Label lblCambioTitulo = new Label("Cambio a devolver:");
+        lblCambioTitulo.setStyle(font + "-fx-font-size: 13px; -fx-text-fill: " + dark + ";");
+        Label lblCambio = new Label(CurrencyUtil.format(0));
+        lblCambio.setStyle(font + "-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: " + emerald + ";");
+        Label lblError = new Label();
+        lblError.setStyle(font + "-fx-font-size: 12px; -fx-text-fill: #6B7280;");
+        VBox changeSection = new VBox(4, lblCambioTitulo, lblCambio, lblError);
+
+        // Botones
+        String primaryOn = "-fx-background-color: " + emerald + "; -fx-text-fill: white; -fx-font-weight: bold;"
+                + "-fx-background-radius: 12; -fx-border-width: 0; -fx-padding: 12 24 12 24; -fx-cursor: hand;"
+                + "-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" + font;
+        Button btnConfirm = new Button("Confirmar cobro");
+        btnConfirm.setStyle(primaryOn);
+        btnConfirm.setDisable(true);
+        btnConfirm.setDefaultButton(true);
+        btnConfirm.setMaxWidth(Double.MAX_VALUE);
+        btnConfirm.setOnAction(e -> {
+            confirmado[0] = true;
+            stage.close();
+        });
+
+        Button btnCancel = new Button("Cancelar");
+        btnCancel.setStyle("-fx-background-color: white; -fx-text-fill: " + dark + ";"
+                + "-fx-background-radius: 12; -fx-border-radius: 12; -fx-border-color: " + gray + "; -fx-border-width: 1.5;"
+                + "-fx-padding: 12 24 12 24; -fx-cursor: hand; -fx-focus-color: transparent; -fx-faint-focus-color: transparent;" + font);
+        btnCancel.setCancelButton(true);
+        btnCancel.setMaxWidth(Double.MAX_VALUE);
+        btnCancel.setOnAction(e -> stage.close());
+
+        HBox.setHgrow(btnConfirm, Priority.ALWAYS);
+        HBox.setHgrow(btnCancel, Priority.ALWAYS);
+        HBox actions = new HBox(12, btnCancel, btnConfirm);
+
+        txtRecibido.textProperty().addListener((obs, o, n) -> {
+            try {
+                double recibido = Double.parseDouble(n.trim().replace(",", "."));
+                double cambio = Math.round((recibido - total) * 100.0) / 100.0;
+                if (cambio < 0) {
+                    lblCambio.setText(CurrencyUtil.format(0));
+                    lblError.setText("Faltan " + CurrencyUtil.format(-cambio));
+                    btnConfirm.setDisable(true);
+                } else {
+                    lblCambio.setText(CurrencyUtil.format(cambio));
+                    lblError.setText("");
+                    btnConfirm.setDisable(false);
+                }
+            } catch (NumberFormatException ex) {
+                lblCambio.setText(CurrencyUtil.format(0));
+                lblError.setText("");
+                btnConfirm.setDisable(true);
+            }
+        });
+        btnConfirm.disabledProperty().addListener((obs, o, disabled) ->
+                btnConfirm.setStyle(primaryOn + (disabled ? "-fx-opacity: 0.45;" : "")));
+
+        // Tarjeta
+        VBox card = new VBox(20, header, totalBox, inputSection, changeSection, actions);
+        card.setPadding(new javafx.geometry.Insets(24));
+        card.setPrefWidth(420);
+        card.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 12;"
+                + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 24, 0.1, 0, 6);");
+
+        StackPane root = new StackPane(card);
+        root.setPadding(new javafx.geometry.Insets(24)); // espacio para la sombra
+        root.setStyle("-fx-background-color: transparent;");
+        javafx.scene.Scene scene = new javafx.scene.Scene(root);
+        scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        stage.setScene(scene);
+        stage.setOnShown(e -> txtRecibido.requestFocus());
+        stage.showAndWait();
+        return confirmado[0];
+    }
+
     private void onCobrarVenta() {
         if (ticketItems.isEmpty()) {
             return;
+        }
+        if (MetodoPago.EFECTIVO.equals(selectedPaymentMethod)) {
+            double subtotal = ticketItems.stream().mapToDouble(TicketLineItem::getSubtotal).sum();
+            if (!mostrarDialogoEfectivo(subtotal + subtotal * IVA_RATE)) {
+                return;
+            }
         }
         try {
             if (HibernateUtil.isConnected()) {
