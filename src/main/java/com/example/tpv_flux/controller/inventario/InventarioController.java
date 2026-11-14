@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Controlador para el módulo de Inventario (Mockup Página 7).
+ * Controlador para el módulo de Inventario.
  */
 public class InventarioController {
 
@@ -238,7 +238,7 @@ public class InventarioController {
         dialog.setTitle("Registrar movimiento de inventario — TPV Core");
 
         VBox root = new VBox(16.0);
-        root.setPadding(new Insets(24));
+        root.setPadding(new Insets(24, 24, 30, 24));
         root.setStyle("-fx-background-color: #FFFFFF;");
 
         VBox headerBox = new VBox(2.0);
@@ -365,7 +365,7 @@ public class InventarioController {
         footerButtons.getChildren().addAll(btnCancelar, btnGuardar);
         root.getChildren().addAll(headerBox, prodBox, rowTypeQty, reasonBox, spacer, footerButtons);
 
-        Scene scene = new Scene(root, 440, 360);
+        Scene scene = new Scene(root, 440, 420);
         var cssRes = InventarioController.class.getResource("/com/example/tpv_flux/css/app.css");
         if (cssRes != null) {
             scene.getStylesheets().add(cssRes.toExternalForm());

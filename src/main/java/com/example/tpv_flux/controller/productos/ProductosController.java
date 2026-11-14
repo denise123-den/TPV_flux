@@ -193,14 +193,17 @@ public class ProductosController {
             if (file != null) {
                 String savedName = copyImageToResources(file);
                 if (savedName != null) {
-                    selectedPhotoName.set(savedName);
                     Image previewImg = ImageUtil.loadFromReference(savedName);
                     if (previewImg != null && !previewImg.isError()) {
+                        selectedPhotoName.set(savedName);
                         ImageView iv = new ImageView(previewImg);
                         iv.setFitWidth(54);
                         iv.setFitHeight(54);
                         iv.setPreserveRatio(true);
                         photoPreview.getChildren().setAll(iv);
+                    } else {
+                        showError("Imagen no compatible",
+                                "No se pudo leer la imagen seleccionada (" + file.getName() + "). Usa un archivo PNG, JPG, JPEG, WEBP o GIF válido.");
                     }
                 }
             }
@@ -566,6 +569,12 @@ public class ProductosController {
             String fileName = selectedFile.getName();
             Path targetPath = targetDir.resolve(fileName);
             Files.copy(selectedFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+            Path compiledDir = Paths.get("target", "classes", "imagenes");
+            if (Files.isDirectory(compiledDir)) {
+                Files.copy(selectedFile.toPath(), compiledDir.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+            }
+
             ImageUtil.clearCache();
             return fileName;
         } catch (Exception ex) {
@@ -581,6 +590,12 @@ public class ProductosController {
         }
         String fileName = copyImageToResources(selectedFile);
         if (fileName != null) {
+            Image loaded = ImageUtil.loadFromReference(fileName);
+            if (loaded == null || loaded.isError()) {
+                showError("Imagen no compatible",
+                        "No se pudo leer la imagen seleccionada (" + selectedFile.getName() + "). Usa un archivo PNG, JPG, JPEG, WEBP o GIF válido.");
+                return;
+            }
             item.setPhoto(fileName);
             if (HibernateUtil.isConnected() && item.getId() != null) {
                 productoDao.updateFoto(item.getId(), fileName);

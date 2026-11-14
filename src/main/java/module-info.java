@@ -10,6 +10,7 @@ module com.example.tpv_flux {
     requires jakarta.persistence;
     requires java.naming;
     requires java.sql;
+    requires java.desktop;
     requires flyway.core;
 
     opens com.example.tpv_flux to javafx.fxml;

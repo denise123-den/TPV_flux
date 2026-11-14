@@ -3,7 +3,12 @@ package com.example.tpv_flux.util;
 import com.example.tpv_flux.HelloApplication;
 import com.example.tpv_flux.model.ProductItem;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
@@ -159,27 +164,36 @@ public final class ImageUtil {
             // Caso A: URL web o file://
             if (ref.startsWith("http://") || ref.startsWith("https://") || ref.startsWith("file:")) {
                 Image img = new Image(ref, true);
-                return img.isError() ? null : img;
+                if (!img.isError()) {
+                    return img;
+                }
+                return loadFromUrl(new URL(ref));
             }
 
             // Caso B: Archivo directo en el disco duro (ej. C:/imagenes/funda.png o ruta relativa)
             File diskFile = new File(ref);
             if (diskFile.exists() && diskFile.isFile()) {
-                Image img = new Image(diskFile.toURI().toString(), false);
-                return img.isError() ? null : img;
+                Image img = loadFromPath(diskFile.toPath());
+                if (img != null) {
+                    return img;
+                }
             }
 
             // Caso C: Archivo dentro de src/main/resources/imagenes/ o src/main/resources/com/example/tpv_flux/images/productos/
             Path altDevPath = Paths.get("src", "main", "resources", "imagenes", ref);
             if (Files.exists(altDevPath) && Files.isRegularFile(altDevPath)) {
-                Image img = new Image(altDevPath.toUri().toString(), false);
-                return img.isError() ? null : img;
+                Image img = loadFromPath(altDevPath);
+                if (img != null) {
+                    return img;
+                }
             }
 
             Path devResourcePath = Paths.get("src", "main", "resources", "com", "example", "tpv_flux", "images", "productos", ref);
             if (Files.exists(devResourcePath) && Files.isRegularFile(devResourcePath)) {
-                Image img = new Image(devResourcePath.toUri().toString(), false);
-                return img.isError() ? null : img;
+                Image img = loadFromPath(devResourcePath);
+                if (img != null) {
+                    return img;
+                }
             }
 
             // Caso D: Recurso en el classpath (busca en /imagenes/ y en /com/example/tpv_flux/images/productos/)
@@ -190,17 +204,60 @@ public final class ImageUtil {
             for (String classpathLocation : candidateLocations) {
                 URL url = HelloApplication.class.getResource(classpathLocation);
                 if (url != null) {
-                    try (InputStream is = url.openStream()) {
-                        Image img = new Image(is);
-                        if (!img.isError()) {
-                            return img;
-                        }
+                    Image img = loadFromUrl(url);
+                    if (img != null) {
+                        return img;
                     }
                 }
             }
         } catch (Exception ignored) {
         }
         return null;
+    }
+
+    private static Image loadFromPath(Path path) {
+        Image img = new Image(path.toUri().toString(), false);
+        if (!img.isError()) {
+            return img;
+        }
+        try (InputStream is = Files.newInputStream(path)) {
+            return decodeWithImageIO(is);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private static Image loadFromUrl(URL url) {
+        try (InputStream is = url.openStream()) {
+            Image img = new Image(is);
+            if (!img.isError()) {
+                return img;
+            }
+        } catch (Exception ignored) {
+        }
+        try (InputStream is = url.openStream()) {
+            return decodeWithImageIO(is);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private static Image decodeWithImageIO(InputStream is) {
+        try {
+            BufferedImage buffered = ImageIO.read(is);
+            if (buffered == null) {
+                return null;
+            }
+            int w = buffered.getWidth();
+            int h = buffered.getHeight();
+            WritableImage writable = new WritableImage(w, h);
+            PixelWriter pw = writable.getPixelWriter();
+            int[] argb = buffered.getRGB(0, 0, w, h, null, 0, w);
+            pw.setPixels(0, 0, w, h, PixelFormat.getIntArgbInstance(), argb, 0, w);
+            return writable;
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     private static Image findInResourcesByBaseName(String baseName) {
