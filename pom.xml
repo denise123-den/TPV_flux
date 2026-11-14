@@ -15,9 +15,9 @@
     </properties>
 
     <dependencies>
-        <!-- ========================================== -->
-        <!--               JAVAFX MODULES               -->
-        <!-- ========================================== -->
+
+        <!--javafx modulos-->
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -29,10 +29,9 @@
             <version>17.0.14</version>
         </dependency>
 
-        <!-- ========================================== -->
+
         <!--          UI THEME & ICONS (MOCKUPS)        -->
-        <!-- ========================================== -->
-        <!-- Tema visual AtlantaFX pedido por tu asesor -->
+        <!-- Tema visual AtlantaFX-->
         <dependency>
             <groupId>io.github.mkpaz</groupId>
             <artifactId>atlantafx-base</artifactId>
@@ -51,9 +50,8 @@
             <version>12.3.1</version>
         </dependency>
 
-        <!-- ========================================== -->
+
         <!--            HIBERNATE & DATA BASE           -->
-        <!-- ========================================== -->
         <!-- Core de Hibernate ORM -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
@@ -68,9 +66,22 @@
             <version>42.7.4</version>
         </dependency>
 
-        <!-- ========================================== -->
+        <!-- Migraciones de Base de Datos (Flyway) -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>10.18.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+            <version>10.18.2</version>
+            <scope>runtime</scope>
+        </dependency>
+
+
         <!--               TESTING (JUNIT)              -->
-        <!-- ========================================== -->
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -120,6 +131,20 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>10.18.2</version>
+                <configuration>
+                    <url>jdbc:postgresql://localhost:5432/TPV_flux</url>
+                    <user>postgres</user>
+                    <password>Luna!11</password>
+                    <baselineOnMigrate>true</baselineOnMigrate>
+                    <locations>
+                        <location>classpath:db/migration</location>
+                    </locations>
+                </configuration>
             </plugin>
         </plugins>
     </build>

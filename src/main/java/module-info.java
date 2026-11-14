@@ -10,6 +10,7 @@ module com.example.tpv_flux {
     requires jakarta.persistence;
     requires java.naming;
     requires java.sql;
+    requires flyway.core;
 
     opens com.example.tpv_flux to javafx.fxml;
     opens com.example.tpv_flux.controller.auth to javafx.fxml;
@@ -20,6 +21,7 @@ module com.example.tpv_flux {
     opens com.example.tpv_flux.controller.reportes to javafx.fxml;
     opens com.example.tpv_flux.controller.notificaciones to javafx.fxml;
     opens com.example.tpv_flux.model to org.hibernate.orm.core, javafx.base, javafx.fxml;
+    opens db.migration;
 
     exports com.example.tpv_flux;
     exports com.example.tpv_flux.config;

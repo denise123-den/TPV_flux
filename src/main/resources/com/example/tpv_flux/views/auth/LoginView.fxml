@@ -17,7 +17,7 @@
            styleClass="login-background"
            stylesheets="@../../css/app.css">
 
-    <!-- Círculos decorativos de las esquinas (Mockup Página 1) -->
+    <!-- Círculos decorativos de las esquinas-->
     <Circle radius="220.0" styleClass="login-bg-circle" mouseTransparent="true"
             StackPane.alignment="TOP_RIGHT" translateX="70.0" translateY="-70.0"/>
     <Circle radius="180.0" styleClass="login-bg-circle" mouseTransparent="true"

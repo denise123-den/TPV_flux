@@ -8,6 +8,7 @@ import com.example.tpv_flux.model.Notificacion;
 import com.example.tpv_flux.model.Producto;
 import com.example.tpv_flux.model.Usuario;
 import com.example.tpv_flux.model.Venta;
+import org.flywaydb.core.Flyway;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -55,6 +56,9 @@ public final class HibernateUtil {
                 DbConnectionConfig resolved = verifyAndPrepareDatabase(url, user, password);
                 configuration.setProperty("hibernate.connection.url", resolved.url());
                 configuration.setProperty("hibernate.connection.password", resolved.password());
+
+                // Ejecutar migraciones de Flyway desde src/main/resources/db/migration
+                runFlywayMigrations(resolved.url(), user, resolved.password());
 
                 configuration.addAnnotatedClass(Categoria.class);
                 configuration.addAnnotatedClass(Producto.class);
@@ -153,6 +157,19 @@ public final class HibernateUtil {
                 }
             }
         } catch (SQLException ignored) {
+        }
+    }
+
+    private static void runFlywayMigrations(String url, String user, String password) {
+        try {
+            Flyway.configure()
+                    .dataSource(url, user, password)
+                    .locations("classpath:db/migration")
+                    .baselineOnMigrate(true)
+                    .load()
+                    .migrate();
+        } catch (Throwable ex) {
+            System.err.println("[TPV_flux] Aviso Flyway: " + ex.getMessage());
         }
     }
 
