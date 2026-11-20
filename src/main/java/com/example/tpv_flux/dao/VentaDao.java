@@ -202,20 +202,17 @@ public class VentaDao {
                             nuevoStock
                     );
                     session.persist(salida);
-
                     if (nuevoStock == 0) {
                         session.persist(new Notificacion("Stock", producto.getNombre() + " se quedó sin stock"));
                     } else if (nuevoStock <= 6 && stockAnterior > 6) {
                         session.persist(new Notificacion("Stock bajo", producto.getNombre() + " tiene solo " + nuevoStock + " unidades"));
                     }
                 }
-
                 session.persist(venta);
                 session.persist(new Notificacion(
                         "Venta",
                         "Venta completada por " + CurrencyUtil.format(total.doubleValue()) + " — Ticket " + folioUnico
                 ));
-
                 tx.commit();
                 return venta;
             } catch (Exception e) {

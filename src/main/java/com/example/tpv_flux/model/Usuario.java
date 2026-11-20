@@ -115,9 +115,7 @@ public class Usuario {
         this.activo = activo;
     }
 
-    /**
-     * Calcula las iniciales a partir del nombre completo (ej. "Ana Martínez" -> "AM").
-     */
+    /** Calcular las iniciales a partir del nombre completo.*/
     public String getIniciales() {
         if (nombreCompleto == null || nombreCompleto.isBlank()) {
             return "US";

@@ -9,17 +9,13 @@
         <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/TPV_flux</property>
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.connection.password">Luna!11</property>
-
         <!-- Pool de conexiones básico -->
         <property name="hibernate.connection.pool_size">5</property>
-
         <!-- Actualización automática de esquema -->
         <property name="hibernate.hbm2ddl.auto">update</property>
-
         <!-- Logs de consultas SQL en consola -->
         <property name="hibernate.show_sql">false</property>
         <property name="hibernate.format_sql">true</property>
-
         <!-- Entidades mapeadas -->
         <mapping class="com.example.tpv_flux.model.Categoria"/>
         <mapping class="com.example.tpv_flux.model.Producto"/>

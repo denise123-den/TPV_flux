@@ -22,23 +22,19 @@ import java.sql.Statement;
  * Gestor Singleton de la conexión con PostgreSQL mediante Hibernate ORM.
  */
 public final class HibernateUtil {
-
     private static SessionFactory sessionFactory;
     private static boolean initializationAttempted = false;
 
     private HibernateUtil() {
     }
-
     public static synchronized SessionFactory getSessionFactory() {
         if (sessionFactory == null && !initializationAttempted) {
             initializationAttempted = true;
             try {
                 Configuration configuration = new Configuration().configure("hibernate.cfg.xml");
-
                 String envUrl = getConfigValue("TPV_DB_URL", "tpv.db.url");
                 String envUser = getConfigValue("TPV_DB_USER", "tpv.db.user");
                 String envPassword = getConfigValue("TPV_DB_PASSWORD", "tpv.db.password");
-
                 if (envUrl != null && !envUrl.isBlank()) {
                     configuration.setProperty("hibernate.connection.url", envUrl);
                 }
@@ -48,7 +44,6 @@ public final class HibernateUtil {
                 if (envPassword != null) {
                     configuration.setProperty("hibernate.connection.password", envPassword);
                 }
-
                 String url = configuration.getProperty("hibernate.connection.url");
                 String user = configuration.getProperty("hibernate.connection.username");
                 String password = configuration.getProperty("hibernate.connection.password");
